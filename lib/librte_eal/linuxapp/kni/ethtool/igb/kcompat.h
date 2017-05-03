@@ -3905,5 +3905,30 @@ skb_set_hash(struct sk_buff *skb, __u32 hash, __always_unused int type)
 #if ( LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0) )
 #define HAVE_VF_VLAN_PROTO
 #endif /* >= 4.9.0 */
+#if ( LINUX_VERSION_CODE >= KERNEL_VERSION(4,2,0) )
+/* ndo_bridge_getlink adds new filter_mask and vlan_fill parameters */
+#define HAVE_NDO_BRIDGE_GETLINK_FILTER_MASK_VLAN_FILL
+#endif /* >= 4.2.0 */
+
+/*
+ * vlan_tx_tag_* macros renamed to skb_vlan_tag_* (Linux commit: df8a39defad4)
+ * For older kernels backported this commit, need to use renamed functions.
+ * This fix is specific to RedHat/CentOS kernels.
+ */
+#if (defined(RHEL_RELEASE_CODE) && \
+	(RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(6, 8)) && \
+	(LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 34)))
+#define vlan_tx_tag_get skb_vlan_tag_get
+#define vlan_tx_tag_present skb_vlan_tag_present
+#endif
+
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)) || \
+    (SLE_VERSION_CODE && SLE_VERSION_CODE >= SLE_VERSION(12, 3, 0)))
+#define HAVE_VF_VLAN_PROTO
+#endif /* >= 4.9.0, >= SLES12SP3 */
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)
+#define HAVE_PCI_ENABLE_MSIX
+#endif
 
 #endif /* _KCOMPAT_H_ */
