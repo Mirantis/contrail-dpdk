@@ -39,6 +39,7 @@
 #include <rte_config.h>
 #include <exec-env/rte_kni_common.h>
 #include <kni_fifo.h>
+#include "compat.h"
 #include "kni_dev.h"
 
 #define WD_TIMEOUT 5 /*jiffies */
@@ -397,7 +398,12 @@ kni_net_tx(struct sk_buff *skb, struct net_device *dev)
 	struct rte_kni_mbuf *pkt_kva = NULL;
 	struct rte_kni_mbuf *pkt_va = NULL;
 
-	dev->trans_start = jiffies; /* save the timestamp */
+	/* save the timestamp */
+#ifdef HAVE_TRANS_START_HELPER
+	netif_trans_update(dev);
+#else
+	dev->trans_start = jiffies;
+#endif
 
 	/* Check if the length of skb is less than mbuf size */
 	if (skb->len > kni->mbuf_size)
