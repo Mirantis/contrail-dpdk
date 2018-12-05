@@ -62,6 +62,15 @@ find_port_id_by_pci_addr(const struct rte_pci_addr *pci_addr)
 		pci_dev = RTE_DEV_TO_PCI(rte_eth_devices[i].device);
 		eth_pci_addr = &pci_dev->addr;
 
+                /* Currently populated by rte_eth_copy_pci_info().
+                 *
+                 * TODO: Once the PCI bus has arrived we should have a better
+                 * way to test for being a PCI device or not.
+                 */
+                if (rte_eth_devices[i].data->kdrv == RTE_KDRV_UNKNOWN ||
+                    rte_eth_devices[i].data->kdrv == RTE_KDRV_NONE)
+                        continue;
+
 		if (pci_addr->bus == eth_pci_addr->bus &&
 			pci_addr->devid == eth_pci_addr->devid &&
 			pci_addr->domain == eth_pci_addr->domain &&
